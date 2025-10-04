@@ -79,16 +79,39 @@ newdata$se_fit <- predictions_se$se.fit
 newdata$lower_ci <- newdata$predicted_clutch - 1.96 * newdata$se_fit
 newdata$upper_ci <- newdata$predicted_clutch + 1.96 * newdata$se_fit
 
+# create dataframe with upper female body mass limit per locality from capture recapture dataset
+break_points_df <- data.frame(
+  Locality = c("Beach", "Konjsko", "Plateau"),
+  break_val = c(1701, 2913, 1756)
+)
+
 #plot predictions and extract
 plot<-ggplot(newdata, aes(x = BM, y = predicted_clutch, color = Locality, fill = Locality)) +
-  geom_line(linewidth = 1.2) +
-  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci), alpha = 0.2, color = NA) +
-  scale_color_manual(values = c("#e69f00", "#56b4e9", "#cc79a7")) +  # apply custom line colors
-  scale_fill_manual(values = c("#e69f00", "#56b4e9", "#cc79a7")) + 
+  geom_line(linewidth = 1) +
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, alpha = Locality), color = NA) +
+  scale_alpha_manual(values = c("Beach" = 0.2, "Konjsko" = 0.4, "Plateau" = 0.1)) +
+  geom_vline(
+    data = break_points_df,
+    aes(xintercept = break_val, color = Locality),
+    linetype = "dashed",
+    linewidth = 0.5
+  ) +
+  scale_color_manual(values = c("Beach" = "#e69f00", "Konjsko" = "#56b4e9", "Plateau" = "#cc79a7")) +
+  scale_fill_manual(values = c("Beach" = "#e69f00", "Konjsko" = "#56b4e9", "Plateau" = "#cc79a7")) +
   coord_cartesian(ylim = c(0, 10)) +
   theme_minimal() +
-  labs(x = "Body Mass (g)",
-       y = "Predicted egg numbers")
+  labs(x = "Body Mass (g)", y = "Predicted Egg Numbers") +
+  theme(
+    # Remove vertical grid lines
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    
+    # Keep and style the major horizontal grid lines
+    panel.grid.major.y = element_line(linewidth = 0.25, color = "gray85"),
+    
+    # Optionally, remove the minor horizontal grid lines for a cleaner look
+    panel.grid.minor.y = element_blank()
+  )
 
 plot
 
