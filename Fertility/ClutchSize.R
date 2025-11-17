@@ -4,6 +4,7 @@ library(lme4)
 library(DHARMa)
 library(ggplot2)
 
+#models
 bm <- glm(Eggs ~ BM, family = poisson, data = data_age)
 scl <- glm(Eggs ~ SCL,   family = poisson, data = data_age)
 Age <- glm(Eggs ~ Age,   family = poisson, data = data_age)
@@ -17,38 +18,38 @@ scl_Xlocality <- glm(Eggs ~ SCL * Locality, family = poisson, data = data_age)
 # perform model selection
 library(MuMIn)
 model.set <- model.sel(bm, scl, bm_locality, scl_locality, scl_Xlocality, bm_Xlocality, Age, Age_locality, Age_Xlocality)
-write.csv(as.data.frame(model.set), "model_selection_table.csv", row.names = TRUE)
+write.csv(as.data.frame(model.set), "model_selection_table_poissonGLMs.csv", row.names = TRUE)
 
 # check diagnostics of best model
 simulationOutput <- simulateResiduals(scl)
 plot(simulationOutput)
 
-#change family and include locality as random factor to address underdispersion
+#change family to address underdispersion
 library(glmmTMB)
 
-com_poisson_bm <- glmmTMB(Eggs ~ BM+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_scl <- glmmTMB(Eggs ~ SCL+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_Age <- glmmTMB(Eggs ~ Age+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_Age_Locality <- glmmTMB(Eggs ~ Age + Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_Age_XLocality <- glmmTMB(Eggs ~ Age * Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_bm_XLocality <- glmmTMB(Eggs ~ BM * Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_bm_Locality <- glmmTMB(Eggs ~ BM + Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_scl_Locality <- glmmTMB(Eggs ~ SCL + Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_scl_XLocality <- glmmTMB(Eggs ~ SCL * Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
+com_poisson_bm <- glmmTMB(Eggs ~ BM, family = compois(link = "log"), data = data_age)
+com_poisson_scl <- glmmTMB(Eggs ~ SCL, family = compois(link = "log"), data = data_age)
+com_poisson_Age <- glmmTMB(Eggs ~ Age, family = compois(link = "log"), data = data_age)
+com_poisson_Age_Locality <- glmmTMB(Eggs ~ Age + Locality, family = compois(link = "log"), data = data_age)
+com_poisson_Age_XLocality <- glmmTMB(Eggs ~ Age * Locality, family = compois(link = "log"), data = data_age)
+com_poisson_bm_XLocality <- glmmTMB(Eggs ~ BM * Locality, family = compois(link = "log"), data = data_age)
+com_poisson_bm_Locality <- glmmTMB(Eggs ~ BM + Locality, family = compois(link = "log"), data = data_age)
+com_poisson_scl_Locality <- glmmTMB(Eggs ~ SCL + Locality, family = compois(link = "log"), data = data_age)
+com_poisson_scl_XLocality <- glmmTMB(Eggs ~ SCL * Locality, family = compois(link = "log"), data = data_age)
 
 #scale predictors due to numeric troubles
 data_age$SCL_scaled <- scale(data_age$SCL)
 data_age$BM_scaled <- scale(data_age$BM)
 
-com_poisson_bm <- glmmTMB(Eggs ~ BM_scaled+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_scl <- glmmTMB(Eggs ~ SCL_scaled+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_Age <- glmmTMB(Eggs ~ Age+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_Age_Locality <- glmmTMB(Eggs ~ Age + Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_Age_XLocality <- glmmTMB(Eggs ~ Age * Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_bm_XLocality <- glmmTMB(Eggs ~ BM_scaled * Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_bm_Locality <- glmmTMB(Eggs ~ scale(BM) + Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_scl_Locality <- glmmTMB(Eggs ~ SCL_scaled + Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
-com_poisson_scl_XLocality <- glmmTMB(Eggs ~ SCL_scaled * Locality+ (1 | Locality), family = compois(link = "log"), data = data_age)
+com_poisson_bm <- glmmTMB(Eggs ~ BM_scaled, family = compois(link = "log"), data = data_age)
+com_poisson_scl <- glmmTMB(Eggs ~ SCL_scaled, family = compois(link = "log"), data = data_age)
+com_poisson_Age <- glmmTMB(Eggs ~ Age, family = compois(link = "log"), data = data_age)
+com_poisson_Age_Locality <- glmmTMB(Eggs ~ Age + Locality, family = compois(link = "log"), data = data_age)
+com_poisson_Age_XLocality <- glmmTMB(Eggs ~ Age * Locality, family = compois(link = "log"), data = data_age)
+com_poisson_bm_XLocality <- glmmTMB(Eggs ~ BM_scaled * Locality, family = compois(link = "log"), data = data_age)
+com_poisson_bm_Locality <- glmmTMB(Eggs ~ scale(BM) + Locality, family = compois(link = "log"), data = data_age)
+com_poisson_scl_Locality <- glmmTMB(Eggs ~ SCL_scaled + Locality, family = compois(link = "log"), data = data_age)
+com_poisson_scl_XLocality <- glmmTMB(Eggs ~ SCL_scaled * Locality, family = compois(link = "log"), data = data_age)
 
 #new model selection
 model.set <- model.sel(com_poisson_bm, com_poisson_scl, com_poisson_bm_Locality, com_poisson_scl_Locality, com_poisson_scl_XLocality, com_poisson_bm_XLocality, com_poisson_Age, com_poisson_Age_Locality, com_poisson_Age_XLocality)
@@ -79,11 +80,12 @@ newdata$se_fit <- predictions_se$se.fit
 newdata$lower_ci <- newdata$predicted_clutch - 1.96 * newdata$se_fit
 newdata$upper_ci <- newdata$predicted_clutch + 1.96 * newdata$se_fit
 
-# create dataframe with upper female body mass limit per locality from capture recapture dataset
+# create dataframe with upper female body mass limit per locality extracted from capture recapture dataset to include in plots
 break_points_df <- data.frame(
   Locality = c("Beach", "Konjsko", "Plateau"),
   break_val = c(1701, 2913, 1756)
 )
+
 
 #plot predictions and extract
 plot<-ggplot(newdata, aes(x = BM, y = predicted_clutch, color = Locality, fill = Locality)) +
@@ -96,6 +98,7 @@ plot<-ggplot(newdata, aes(x = BM, y = predicted_clutch, color = Locality, fill =
     linetype = "dashed",
     linewidth = 0.5
   ) +
+  
   scale_color_manual(values = c("Beach" = "#e69f00", "Konjsko" = "#56b4e9", "Plateau" = "#cc79a7")) +
   scale_fill_manual(values = c("Beach" = "#e69f00", "Konjsko" = "#56b4e9", "Plateau" = "#cc79a7")) +
   coord_cartesian(ylim = c(0, 10)) +
